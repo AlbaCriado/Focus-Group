@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MissFocus · Tus focus groups en un solo lugar</title>
+<style>
+:root{--y:#FFC93C;--yd:#E8A900;--yl:#FFF4CC;--ink:#2B2D31;--g1:#F5F5F3;--g2:#E4E4E1;--g3:#8A8D93;--ok:#3F9B6B;--bad:#D9534F;--r:20px}
+*{box-sizing:border-box}
+body{margin:0;font-family:ui-rounded,"Nunito","Segoe UI",system-ui,sans-serif;background:var(--g1);color:var(--ink);line-height:1.5}
+h1,h2,h3{margin:0 0 .4em;line-height:1.2}h1{font-size:1.9rem}h2{font-size:1.4rem}h3{font-size:1.05rem}
+p{margin:.2em 0 .8em}.mut{color:var(--g3);font-size:.92rem}
+header{background:#fff;border-bottom:3px solid var(--y);position:sticky;top:0;z-index:5}
+.bar{max-width:1000px;margin:auto;display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.3rem;margin-right:auto;cursor:pointer}
+.brand svg{width:46px;height:46px}
+nav{display:flex;gap:6px}
+main{max-width:1000px;margin:auto;padding:20px 16px 80px}
+button{font:inherit;cursor:pointer;border:0;border-radius:999px;padding:9px 18px;font-weight:700;background:var(--g2);color:var(--ink);display:inline-flex;align-items:center;gap:6px}
+button:hover{filter:brightness(.96)}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.pri{background:var(--y)}.dark{background:var(--ink);color:#fff}.nv.on{background:var(--y)}.sm{padding:6px 12px;font-size:.88rem}.danger{color:var(--bad)}
+button:disabled{opacity:.4;cursor:default}
+.card{background:#fff;border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:0 2px 0 var(--g2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.ico{width:42px;height:42px;border-radius:14px;background:var(--yl);display:grid;place-items:center;font-size:1.3rem;flex:none}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.badge{font-size:.78rem;font-weight:800;padding:3px 10px;border-radius:99px;background:var(--yl)}.badge.ok{background:#DDF3E6;color:#256B48}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 14px}
+.chip{background:#fff;border:2px solid var(--g2);padding:6px 14px}.chip.on{background:var(--y);border-color:var(--y)}
+input[type=text],textarea{width:100%;font:inherit;padding:12px 14px;border:2px solid var(--g2);border-radius:16px;background:#fff;color:var(--ink)}
+textarea{min-height:110px;resize:vertical}input:focus,textarea:focus{border-color:var(--y)}
+.tip{background:var(--yl);border-radius:16px;padding:12px 14px;margin:10px 0;font-size:.93rem;display:flex;gap:10px}
+.steps{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
+.st{flex:1;min-width:92px;flex-direction:column;gap:2px;border-radius:16px;padding:8px;background:#fff;font-size:.8rem}.st.on{background:var(--y)}.st b{font-size:1.15rem}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.bub{position:relative;background:#fff;border:2px solid var(--g2);border-radius:24px 24px 24px 6px;padding:14px;margin-bottom:14px}
+.bub label{font-weight:800;display:block;margin-bottom:6px}.bub textarea{min-height:80px;border:0;background:var(--g1)}
+.map{display:grid;grid-template-columns:repeat(17,1fr);gap:3px;margin:8px 0;max-width:720px}
+.map button{padding:0;border-radius:8px;aspect-ratio:1;font-size:clamp(.5rem,1.7vw,.72rem);justify-content:center;background:var(--g2);color:#555;min-width:0}
+.map button.on{background:var(--y);color:var(--ink)}.map .e{visibility:hidden}
+.foot{display:flex;justify-content:space-between;margin-top:18px;gap:10px}
+.res{border-left:6px solid var(--y)}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:99px;opacity:0;transition:.3s;pointer-events:none;z-index:9}#toast.on{opacity:1}
+#print{display:none}
+@media print{body>*:not(#print){display:none!important}#print{display:block;padding:10px}#print h1{border-bottom:4px solid var(--y)}#print h2{margin-top:1.2em}#print pre{white-space:pre-wrap;font:inherit}}
+@media(max-width:600px){h1{font-size:1.5rem}.brand{font-size:1.1rem}.bar{gap:8px}nav{width:100%}nav button{flex:1;justify-content:center}.foot button{padding:9px 12px}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+<div class="brand" onclick="go('col')" role="button" aria-label="MissFocus, inicio">
+<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="62" rx="36" ry="30" fill="#9AA0A8"/><ellipse cx="50" cy="72" rx="22" ry="16" fill="#D3D6DA"/><circle cx="36" cy="55" r="5" fill="#2B2D31"/><circle cx="64" cy="55" r="5" fill="#2B2D31"/><ellipse cx="50" cy="66" rx="7" ry="5" fill="#2B2D31"/><path d="M50 71v5M43 79q7 5 14 0" stroke="#2B2D31" stroke-width="2.5" fill="none" stroke-linecap="round"/><g fill="#fff"><ellipse cx="50" cy="12" rx="6" ry="10"/><ellipse cx="50" cy="32" rx="6" ry="10"/><ellipse cx="40" cy="22" rx="10" ry="6"/><ellipse cx="60" cy="22" rx="10" ry="6"/></g><circle cx="50" cy="22" r="7" fill="#FFC93C"/></svg>MissFocus</div>
+<nav><button class="nv" id="n-col" onclick="go('col')">📚 Mi colección</button><button class="nv" id="n-new" onclick="newFG()">✨ Nuevo focus group</button></nav>
+</div></header>
+<main id="app"></main>
+<div id="print"></div><div id="toast" role="status"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const OPT={age:['0-6','6-10','10-12','13-16','16-18','18-24','24-30','30-45','45-60','60+'],sex:['Masculino','Femenino','Otro'],cls:['Baja','Media-baja','Media','Media-alta','Alta'],st:['Casados','Solteros','Padre/madre','Abuelo/a'],edu:['Primaria','Secundaria','Bachillerato/FP','Grado','Máster/Doctorado'],tech:['Bajo','Medio','Alto','Experto'],pers:['Introvertida','Extrovertida','Analítica','Creativa','Líder','Escéptica'],n:['4-6','6-8','8-10','10-12']};
+const LBL={age:'🎂 Rango de edad',sex:'🧑 Sexo',cls:'💼 Clase social',st:'💍 Estatus',edu:'🎓 Nivel de estudios',tech:'💻 Nivel tecnológico',pers:'🎭 Personalidad',n:'👥 Número de participantes'};
+const RES=[['nav','🧭','Dificultades de navegación o uso'],['conf','🛡️','Falta de confianza'],['comp','🧩','Problemas de comprensión'],['ins','💡','Insights'],['sol','🗣️','Soluciones aportadas por los usuarios'],['team','🏁','Solución del equipo']];
+const STEPS=[['🎯','Objetivo'],['👥','Participantes'],['📝','Guión'],['💬','Respuestas'],['📊','Resultados']];
+// mapa de baldosas: nombre,columna,fila
+const MAP='Canadá,2,1;EE. UU.,2,2;México,2,3;Cuba,3,3;Guatemala,2,4;Costa Rica,3,4;Colombia,4,5;Venezuela,5,4;Ecuador,3,6;Perú,4,6;Brasil,6,6;Bolivia,5,7;Paraguay,6,7;Chile,4,8;Argentina,5,8;Uruguay,6,8;Irlanda,7,1;Reino Unido,8,1;Francia,8,2;Portugal,7,3;España,8,3;Alemania,9,2;Países Bajos,9,1;Suecia,10,0;Polonia,10,2;Italia,9,3;Grecia,10,3;Ucrania,11,2;Turquía,11,3;Rusia,12,1;Marruecos,8,4;Argelia,9,4;Egipto,10,4;Nigeria,9,5;R. D. Congo,10,6;Etiopía,11,5;Kenia,11,6;Angola,10,7;Sudáfrica,10,8;Arabia Saudí,12,4;Irán,13,3;Kazajistán,13,2;Pakistán,13,4;India,14,4;China,15,3;Corea del Sur,16,3;Japón,17,3;Tailandia,15,5;Vietnam,16,5;Filipinas,17,5;Indonesia,16,7;Australia,17,8;Nueva Zelanda,18,9'.split(';').map(x=>x.split(','));
+let S={view:'col',filter:'all',d:null,h:[],cur:'',step:0};
+const load=()=>{try{return JSON.parse(localStorage.getItem('missfocus'))||null}catch(e){return null}};
+let DB=load()||[{id:1,title:'Ejemplo: app de apuntes',done:false,obj:'Entender por qué los estudiantes abandonan nuestra app de apuntes en la primera semana.',p:{age:['18-24'],sex:[],cls:[],st:['Solteros'],edu:['Grado'],tech:['Medio'],pers:[],n:['6-8'],c:['España']},intro:'',qs:['¿Cómo organizas hoy tus apuntes?','¿Qué te frenó al usar la app?',''],act:'',close:'',notes:'',summary:'',res:{},upd:new Date().toISOString()}];
+const persist=()=>{try{localStorage.setItem('missfocus',JSON.stringify(DB))}catch(e){}};
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2000)}
+function blank(){return{id:Date.now(),title:'',done:false,obj:'',p:{age:[],sex:[],cls:[],st:[],edu:[],tech:[],pers:[],n:[],c:[]},intro:'',qs:['','',''],act:'',close:'',notes:'',summary:'',res:{},upd:new Date().toISOString()}}
+function go(v){S.view=v;render()}
+function newFG(){S.d=blank();S.step=0;S.h=[];S.cur=JSON.stringify(S.d);S.view='wiz';render()}
+function openFG(id){S.d=JSON.parse(JSON.stringify(DB.find(x=>x.id==id)));S.step=0;S.h=[];S.cur=JSON.stringify(S.d);S.view='wiz';render()}
+function delFG(id){if(confirm('¿Eliminar este focus group? No se puede deshacer.')){DB=DB.filter(x=>x.id!=id);persist();render()}}
+// edición
+function set(el){const k=el.dataset.k.split('.');let o=S.d;while(k.length>1)o=o[k.shift()];o[k[0]]=el.value}
+function commit(){const n=JSON.stringify(S.d);if(n!==S.cur){S.h.push(S.cur);if(S.h.length>60)S.h.shift();S.cur=n;upd()}}
+function undo(){if(!S.h.length)return;S.cur=S.h.pop();S.d=JSON.parse(S.cur);render()}
+function upd(){const u=$('#undo');if(u)u.disabled=!S.h.length}
+function save(){S.d.upd=new Date().toISOString();const i=DB.findIndex(x=>x.id==S.d.id);i<0?DB.unshift(JSON.parse(JSON.stringify(S.d))):DB[i]=JSON.parse(JSON.stringify(S.d));persist();S.cur=JSON.stringify(S.d);toast('Cambios guardados ✔')}
+function tog(g,v){const a=S.d.p[g];const i=a.indexOf(v);i<0?a.push(v):a.splice(i,1);commit();render()}
+function addQ(){S.d.qs.push('');commit();render()}
+function delQ(i){S.d.qs.splice(i,1);commit();render()}
+function stepTo(n){S.step=Math.max(0,Math.min(4,n));render();scrollTo(0,0)}
+// resumen (análisis local por palabras clave)
+function analyse(){
+ const t=S.d.notes.trim();if(!t){toast('Pega primero las notas del focus group');return}
+ const ss=t.split(/[\n.!?]+/).map(x=>x.trim()).filter(x=>x.length>8);
+ const pos=/(gust|encant|fácil|facil|útil|util|claro|rápid|rapid|bien|genial|cómod|comod|confí|confi|me ayuda|buen)/i,neg=/(no (me|entend|encuent|sé|se )|difícil|dificil|confus|lent|problema|error|falta|desconf|miedo|frustr|molest|caro|perd|complic|mal )/i;
+ const stop=new Set('para como pero porque cuando donde sobre entre muy más also tiene tengo estar están esto esta ellos algo todo cada menos hasta desde aunque siempre nunca también cosas poco mucho'.split(' '));
+ const f={};t.toLowerCase().match(/[a-záéíóúñ]{5,}/g)?.forEach(w=>{if(!stop.has(w))f[w]=(f[w]||0)+1});
+ const top=Object.entries(f).sort((a,b)=>b[1]-a[1]);
+ const P=ss.filter(s=>pos.test(s)&&!neg.test(s)),N=ss.filter(s=>neg.test(s));
+ const L=a=>a.length?a.slice(0,6).map(x=>'• '+x).join('\n'):'• No se han detectado.';
+ S.d.summary=`TEMAS PRINCIPALES\n${top.slice(0,5).map(x=>'• '+x[0]).join('\n')||'• —'}\n\nOPINIONES POSITIVAS\n${L(P)}\n\nOPINIONES NEGATIVAS\n${L(N)}\n\nIDEAS RECURRENTES\n${top.filter(x=>x[1]>1).slice(0,5).map(x=>`• "${x[0]}" (${x[1]} menciones)`).join('\n')||'• Ninguna palabra se repite lo suficiente.'}\n\nRECOMENDACIONES PRÁCTICAS\n${N.slice(0,4).map(x=>'• Revisar: '+x).join('\n')||'• Sin puntos críticos detectados.'}`;
+ commit();render();toast('Resumen generado. Revísalo y edítalo');
+}
+// exportación
+function scriptTxt(){const d=S.d;return `GUIÓN · ${d.title||'Focus group'}\n\nINTRODUCCIÓN\n${d.intro}\n\n${d.qs.map((q,i)=>`PREGUNTA ${i+1}\n${q}`).join('\n\n')}\n\nACTIVIDAD GRUPAL\n${d.act||'(Sin actividad)'}\n\nCIERRE\n${d.close}`}
+function resTxt(){return RES.map(r=>`${r[2].toUpperCase()}\n${S.d.res[r[0]]||''}`).join('\n\n')}
+function copy(t){navigator.clipboard.writeText(t).then(()=>toast('Copiado 📋'),()=>toast('No se pudo copiar'))}
+function dl(name,t){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=name;a.click()}
+function pdf(mode){const d=S.d,p=d.p;const sec=(h,t)=>`<h2>${h}</h2><pre>${esc(t)||'—'}</pre>`;
+ let h=`<h1>🦭 ${esc(d.title||'Focus group')}</h1><p>MissFocus · ${new Date().toLocaleDateString('es-ES')}</p>`;
+ if(mode=='full')h+=sec('Objetivo',d.obj)+`<h2>Participantes</h2>`+Object.keys(LBL).map(k=>`<p><b>${LBL[k]}:</b> ${esc(p[k].join(', ')||'—')}</p>`).join('')+`<p><b>🌍 Países:</b> ${esc(p.c.join(', ')||'—')}</p>`;
+ h+=`<h2>Guión</h2><pre>${esc(scriptTxt())}</pre>`;
+ if(mode=='full')h+=sec('Resumen de respuestas',d.summary)+sec('Resultados',resTxt())+`<p>Estado: ${d.done?'Completado':'En curso'}</p>`;
+ $('#print').innerHTML=h;setTimeout(()=>print(),50)}
+// vistas
+const fmt=s=>new Date(s).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'});
+function vCol(){const l=DB.filter(x=>S.filter=='all'||(S.filter=='done')==x.done);
+ const ch=(k,t)=>`<button class="chip sm ${S.filter==k?'on':''}" onclick="S.filter='${k}';render()">${t}</button>`;
+ return `<h1>📚 Mi colección</h1><p class="mut">Todos tus focus groups, a un clic.</p><div class="chips">${ch('all','Todos ('+DB.length+')')}${ch('prog','⏳ En curso ('+DB.filter(x=>!x.done).length+')')}${ch('done','✅ Completados ('+DB.filter(x=>x.done).length+')')}</div>
+ ${l.length?`<div class="grid">${l.map(x=>`<div class="card"><div class="row"><div class="ico">${x.done?'✅':'⏳'}</div><span class="badge ${x.done?'ok':''}">${x.done?'Completado':'En curso'}</span></div><h3 style="margin-top:10px">${esc(x.title||'Sin título')}</h3><p class="mut">${esc((x.obj||'Sin objetivo todavía').slice(0,110))}</p><p class="mut">Editado el ${fmt(x.upd)}</p><div class="row"><button class="pri sm" onclick="openFG(${x.id})">${x.done?'Abrir':'Continuar'}</button><button class="sm danger" onclick="delFG(${x.id})">Eliminar</button></div></div>`).join('')}</div>`
+ :`<div class="card" style="text-align:center"><div style="font-size:2.5rem">🌼</div><h3>Aquí no hay nada todavía</h3><p class="mut">Crea tu primer focus group para empezar.</p><button class="pri" onclick="newFG()">Crear focus group</button></div>`}`}
+function chips(g){return `<div class="chips">${OPT[g].map(o=>`<button class="chip sm ${S.d.p[g].includes(o)?'on':''}" aria-pressed="${S.d.p[g].includes(o)}" onclick="tog('${g}','${o}')">${o}</button>`).join('')}</div>`}
+function tog2(c){const a=S.d.p.c,i=a.indexOf(c);i<0?a.push(c):a.splice(i,1);commit();render()}
+function ta(k,v,ph,rows){return `<textarea data-k="${k}" placeholder="${ph}" oninput="set(this)" onchange="commit()" ${rows?`style="min-height:${rows}px"`:''}>${esc(v)}</textarea>`}
+function tip(t){return `<div class="tip"><span>💡</span><span>${t}</span></div>`}
+function vStep(){const d=S.d;
+ if(S.step==0)return `<div class="card"><h2>🎯 Objetivo principal</h2>${tip('Piensa en el problema que tienes y en cómo quieres resolverlo. Un buen objetivo es concreto y se puede responder con lo que digan los participantes. Por ejemplo: «Descubrir por qué los usuarios no terminan el registro».')}${ta('obj',d.obj,'Escribe aquí el objetivo de tu focus group…',140)}</div>`;
+ if(S.step==1){let m=[],g={};MAP.forEach(x=>g[x[1]+','+x[2]]=x);for(let r=0;r<10;r++)for(let c=0;c<17;c++){const x=g[c+','+r];m.push(x?`<button title="${x[0]}" class="${d.p.c.includes(x[0])?'on':''}" aria-pressed="${d.p.c.includes(x[0])}" aria-label="${x[0]}" onclick="tog2('${x[0]}')">${x[0].replace(/[^A-Za-zÁÉÍÓÚáéíóúñ]/g,'').slice(0,3).toUpperCase()}</button>`:'<button class="e" tabindex="-1" disabled></button>')}
+  return `<div class="card"><h2>👥 Participantes</h2><p class="mut">Puedes elegir varias opciones en cada apartado.</p>${Object.keys(LBL).map(k=>`<h3>${LBL[k]}</h3>${chips(k)}`).join('')}<h3>🌍 Países de tu público</h3><p class="mut">Toca un país para seleccionarlo (amarillo) y vuelve a tocarlo para quitarlo.</p><div class="map" role="group" aria-label="Mapamundi">${m.join('')}</div><p><b>Seleccionados:</b> ${esc(d.p.c.join(', ')||'ninguno')}</p></div>`}
+ if(S.step==2)return `<div class="card"><h2>📝 Guión</h2>
+  <div class="bub"><label>👋 Introducción</label>${tip('Empieza con una frase dinámica que rompa el hielo y no olvides explicar las reglas: no hay respuestas correctas, todas las opiniones valen y se respeta el turno.')}${ta('intro',d.intro,'Bienvenidos y gracias por venir…')}</div>
+  ${d.qs.map((q,i)=>`<div class="bub"><label>❓ Pregunta ${i+1}</label>${i==0?tip('Haz preguntas abiertas que generen conversación y debate: empieza por «¿Cómo…?», «¿Qué…?» o «¿Por qué…?» y evita las que se responden con sí o no.'):''}${ta('qs.'+i,q,'Escribe tu pregunta…')}${i>2?`<button class="sm danger" onclick="delQ(${i})">🗑️ Quitar pregunta</button>`:''}</div>`).join('')}
+  <button class="sm" onclick="addQ()">➕ Añadir pregunta</button>
+  <div class="bub" style="margin-top:14px"><label>🎲 Actividad grupal <span class="mut">(opcional)</span></label>${ta('act',d.act,'Puedes dejarlo en blanco…')}</div>
+  <div class="bub"><label>🙏 Cierre</label>${tip('Agradece a los participantes su tiempo y esfuerzo, y cuéntales qué harás con lo que han compartido.')}${ta('close',d.close,'Muchas gracias por…')}</div></div>`;
+ if(S.step==3)return `<div class="card"><h2>💬 Respuestas y feedback</h2><p class="mut">Pega aquí las notas o la transcripción del focus group.</p>${ta('notes',d.notes,'Pega aquí las notas…',200)}<div class="tools"><button class="pri" onclick="analyse()">✨ Generar resumen</button></div><p class="mut">El resumen se calcula en tu navegador detectando palabras clave, sin enviar nada a internet. Úsalo como punto de partida y edítalo.</p>${d.summary?`<h3>Resumen</h3>${ta('summary',d.summary,'',320)}`:''}</div>`;
+ return `<div class="card"><h2>📊 Resultados</h2><p class="mut">Organiza lo que has aprendido en cada apartado.</p></div>${RES.map(r=>`<div class="card res"><div class="row"><div class="ico">${r[1]}</div><h3 style="margin:0;margin-right:auto">${r[2]}</h3><button class="sm" onclick="copy(S.d.res.${r[0]}||'')">📋 Copiar</button></div><div style="margin-top:10px">${ta('res.'+r[0],d.res[r[0]]||'',r[0]=='team'?'¿Qué solución propone vuestro equipo?':'Escribe aquí…')}</div></div>`).join('')}
+  <div class="tools"><button onclick="copy(resTxt())">📋 Copiar todo</button><button onclick="dl('resultados.txt',resTxt())">⬇️ Exportar .txt</button><button class="pri" onclick="S.d.done=!S.d.done;commit();save();render()">${d.done?'↩️ Marcar como en curso':'✅ Marcar como completado'}</button></div>`}
+function vWiz(){return `<input type="text" data-k="title" value="${esc(S.d.title)}" placeholder="Nombre del focus group" aria-label="Nombre" oninput="set(this)" onchange="commit()" style="font-weight:800;font-size:1.2rem">
+ <div class="tools"><button class="dark" onclick="save()">💾 Guardar</button><button id="undo" onclick="undo()" ${S.h.length?'':'disabled'}>↩️ Deshacer</button><button onclick="pdf('full')">📄 Informe PDF</button><button onclick="pdf('script')">📝 Solo guión</button></div>
+ <div class="steps">${STEPS.map((s,i)=>`<button class="st ${S.step==i?'on':''}" onclick="stepTo(${i})"><b>${s[0]}</b>${s[1]}</button>`).join('')}</div>
+ ${vStep()}<div class="foot"><button onclick="stepTo(${S.step-1})" ${S.step?'':'disabled'}>← Anterior</button><button class="pri" onclick="${S.step<4?'save();stepTo('+(S.step+1)+')':'save();go(\'col\')'}">${S.step<4?'Guardar y seguir →':'Guardar y salir'}</button></div>`}
+function render(){const k=document.activeElement?.dataset?.k;
+ $('#app').innerHTML=S.view=='col'?vCol():vWiz();
+ $('#n-col').classList.toggle('on',S.view=='col');$('#n-new').classList.toggle('on',S.view=='wiz');}
+render();
+</script>
+</body>
+</html>
